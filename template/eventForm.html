@@ -1,0 +1,78 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>Novi događaj - {{.user.Organization}}</h1>
+    {{if .validationErrors}}
+        <ul class="validationErrors">
+            {{range .validationErrors}}
+                <li>{{.}}</li>
+            {{end}}
+        </ul>
+    {{end}}
+    <form method="post">
+        <div class="formRow">
+            <label for="name">Naziv:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="name" name="name" min="3" maxlength="100" value="{{.event.Name}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="description">Opis:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="description" name="description" min="3" maxlength="100" value="{{.event.Description}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="eventType">Tip:</label>
+            <div class="skewer darkBox">
+                <select name="eventType" id="eventType">
+                    {{range .eventTypes}}
+                        <option value="{{.Value}}" {{if eq $.event.EventType .Value}}selected="selected"{{end}}>{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="from">Početak:</label>
+            <div class="skewer darkBox">
+                <input name="from" type="datetime-local" />
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="to">Kraj:</label>
+            <div class="skewer darkBox">
+                <input name="to" type="datetime-local" />
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="address">Adresa:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="address" name="address" min="3" maxlength="100" value="{{.event.Address}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="city">Grad:</label>
+            <div class="skewer darkBox">
+                <select name="city" id="city">
+                    {{range .cities}}
+                        <option value="{{.Code}}" {{if eq $.event.CityCode .Code}}selected="selected"{{end}}>{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="entry">Ulaz:</label>
+            <div class="skewer darkBox">
+                <input type="number" id="entry" name="entry" step="1" min="0" value="{{.event.EntryPrice}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="language">Jezik:</label>
+            <div class="skewer darkBox">
+                <input type="number" id="language" name="language" step="1" min="0">
+            </div>
+        </div>
+        <div class="rightAligned">
+            <button type="submit" class="skewer"><div>Dodaj</div></button>
+        </div>
+    </form>
+{{end}}

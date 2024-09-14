@@ -1,0 +1,40 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>Događaji</h1>
+    <form>
+        <div class="formRow">
+            <label>Grad:</label>
+            <div class="skewer darkBox">
+                <select name="city" id="citySelect" onchange="this.form.submit()">
+                    {{range .cities}}
+                        <option value="{{.Code}}" {{if eq $.selectedCity .Code}}selected="selected"{{end}} >{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+        <div class="formRow">
+            <label>Od:</label>
+            <div class="skewer darkBox">
+                <input name="from" type="date" value="{{.from}}" onchange="this.form.submit()" />
+            </div>
+        </div>
+    </form>
+    {{if .user.LoggedIn}}
+        <div class="rightAligned">
+            <a href="/events/new" class="button skewer">
+                <div>
+                    Dodaj novi događaj
+                </div>
+            </a>
+        </div>
+    {{end}}
+    <div>
+        {{if .events}}
+            {{range .events}}
+                {{template "eventEntry" .}}
+            {{end}}
+        {{else}}
+            <div class="noResult">Nema događaja koji odgovaraju odabranim filterima.</div>
+        {{end}}
+    </div>
+{{end}}

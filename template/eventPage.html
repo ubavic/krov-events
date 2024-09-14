@@ -1,0 +1,12 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>{{.event.Name}}</h1>
+    <p><a href="/organizations/{{.event.OrganizationCode}}">{{.event.OrganizationName}}</a></p>
+    <p>
+        {{if .event.Address}}{{.event.Address}},{{end}} {{.event.CityName}}
+    </p>
+    {{if .event.Description}}
+        <br>
+        <p>{{.event.Description}}</p>
+    {{end}}
+{{end}}

@@ -1,0 +1,23 @@
+{{define "main"}}
+	<!DOCTYPE html>
+	<html lang="en">
+		<head> 
+	        <meta charset="UTF-8">
+	        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>{{.Title}}</title>
+	        <link href="/static/style.css" rel="stylesheet">
+		</head>
+		<body>
+			<main>
+				<nav>
+					<a href="/events/"><span>Događaji</span></a>
+					<a href="/organizations/"><span>Organizacije</span></a>
+					<div class="rightAligner"></div>
+					<a href="/about/"><span>O projektu</span></a>
+				</nav>
+				{{template "content" .Data}}
+			</main>
+			{{template "footer"}}
+		</body>
+	</html>
+{{end}}

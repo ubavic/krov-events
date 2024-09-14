@@ -1,0 +1,39 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>Organizacije</h1>
+    <form>
+        <div class="formRow">
+            <label>Grad:</label>
+            <div class="skewer darkBox">
+                <select name="city" id="city" onchange="this.form.submit()">
+                    {{range .cities}}
+                        <option value="{{.Code}}" {{if eq $.selectedCity .Code}}selected="selected"{{end}}>{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+    </form>
+    {{if .user.Admin}}
+        <div class="rightAligned">
+            <a class="button skewer" href="/organizations/new">
+                <div>
+                    Dodaj novu organizaciju
+                </div>
+            </a>
+        </div>
+    {{end}}
+    <div class="organizationList">
+        {{if .organizations}}
+            {{range .organizations}}
+                <a class="entry skewer" href="/organizations/{{.Code}}/">
+                    <div>
+                        <strong>{{.Name}}</strong>
+                        <p class="location">{{.CityName}}</p>
+                    </div>
+                </a>
+            {{end}}
+        {{else}}
+            <div class="noResult">Nema organizacija koji odgovaraju odabranim filterima.</div>
+        {{end}}
+    </div>
+{{end}}

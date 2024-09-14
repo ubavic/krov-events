@@ -1,0 +1,8 @@
+{{define "eventEntry"}}
+    <a class="entry skewer entryType{{.EventType}}" href="/events/{{.Id}}/">
+        <div>
+            <strong>{{.Name}}</strong>
+            <p class="location">{{.CityName}}</p>
+        </div>
+    </a>
+{{end}}

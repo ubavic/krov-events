@@ -1,0 +1,40 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>{{.organization.Name}}</h1>
+    <p>
+        {{if .organization.OsmUrl}}<a href="">{{end}}
+        {{if .organization.Address}}{{.organization.Address}},{{end}} {{.organization.CityName}}
+        {{if .organization.OsmUrl}}</a>{{end}}
+    </p>
+    {{if .organization.Description}}
+        <br>
+        <p>
+            {{.organization.Description}}
+        </p>
+    {{end}}
+    <br>
+    {{if .user.LoggedIn}}
+        {{if .organization.Email}}
+            <p>Email: <a href="mailto:{{.organization.Email}}">{{.organization.Email}}</a></p>
+        {{end}}
+    {{end}}
+    {{if .organization.Website}}
+        <p>Web: <a href="{{.organization.Website}}">{{.organization.Website}}</a></p>
+    {{end}}
+    {{if .events}}
+        <h2>Predstojeći događaji</h2>
+        {{range .events}}
+            {{template "eventEntry" .}}
+        {{end}}
+        <p style="text-align: right;"><a href="/events/">Svi događaji</a></p>
+    {{end}}
+    {{if .user.Admin}}
+        <div class="rightAligned">
+            <a href="/organizations/{{.organization.Code}}/edit" class="button skewer">
+                <div>
+                    Izmeni organizaciju
+                </div> 
+            </a>
+        </div>
+    {{end}}
+{{end}}

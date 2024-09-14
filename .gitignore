@@ -1,0 +1,12 @@
+main
+__debug_bin*
+*.exe
+*.tmp
+*.env
+bin/
+*.out
+*.cov
+*.json
+*.tar.xz
+.idea
+.DS_Store

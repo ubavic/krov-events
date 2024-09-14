@@ -1,0 +1,88 @@
+{{template "main" .}}
+{{define "content"}}
+    <h1>
+        {{if .edit}}
+            Izmeni organizaciju
+        {{else}}
+            Nova organizacija
+        {{end}}
+    </h1>
+    {{if .validationErrors}}
+        <ul class="validationErrors">
+            {{range .validationErrors}}
+                <li>{{.}}</li>
+            {{end}}
+        </ul>
+    {{end}}
+    <form method="post">
+        <div class="formRow">
+            <label for="code">Kod:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="code" name="code" pattern="[a-z]*" min="3" maxlength="20" required value="{{.organization.Code}}" {{if .edit}}readonly{{end}}>
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="name">Ime:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="name" name="name" min="3" maxlength="100" required value="{{.organization.Name}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="description">Opis:</label>
+            <div class="darkBox">
+                <textarea id="description" name="description">{{.organization.Description}}</textarea>
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="email">Email:</label>
+            <div class="skewer darkBox">
+                <input type="email" id="email" name="email" min="5" maxlength="50" required value="{{.organization.Email}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="website">Web:</label>
+            <div class="skewer darkBox">
+                <input type="url" id="website" name="website" value="{{.organization.Website}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="address">Adresa:</label>
+            <div class="skewer darkBox">
+                <input type="text" id="address" name="address"  value="{{.organization.Address}}">
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="city">Grad:</label>
+            <div class="skewer darkBox">
+                <select name="city" id="city">
+                    {{range .cities}}
+                        <option value="{{.Code}}" {{if eq $.organization.CityCode .Code}}selected="selected"{{end}}>{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+        </div>
+        <div class="formRow">
+            <label for="osm"><abbr title="Označava link ka Open street map-u sa fizičkom adresom organizacije.">OSM:</abbr></label>
+            <div class="skewer darkBox">
+                <input type="url" id="osm" name="osm" value="{{.organization.OsmUrl}}">
+            </div>
+        </div>
+        {{if .user.Admin}}
+            <div class="formRow">
+                <label for="api"><abbr title="Označava da li organizacija može da pristupi API-ju. Namenjeno samo za tehničke korinsike.">API:</abbr></label>
+                <input class="skewer darkBox" type="checkbox" id="api" name="api" value="{{.allowApi}}" style="flex-grow: 0; align-self: flex-start;">
+            </div>
+        {{end}}
+        <div class="rightAligned">
+            <button type="submit" class="skewer">
+                <div>
+                    {{if .edit}}
+                        Izmeni
+                    {{else}}
+                        Dodaj
+                    {{end}}
+                </div>
+            </button>
+        </div>
+    </form>
+{{end}}
