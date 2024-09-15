@@ -16,7 +16,6 @@ func (controller *Controller) getOrganizations(w http.ResponseWriter, r *http.Re
 	}
 
 	pe := controller.view.NewExecutor(w, r.Context())
-
 	err = pe.OrganizationList(organizations, cityParam)
 	if err != nil {
 		controller.serverError(http.StatusInternalServerError, err)(w, r)

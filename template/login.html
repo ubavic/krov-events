@@ -1,0 +1,12 @@
+{{template "main" .}}
+{{define "content"}}
+<br>
+<br>
+<p style="text-align: center;">
+    {{if .successful}}
+    Uspesno ste se ulogovali
+    {{else}}
+    Logovanje nije uspesno
+    {{end}}
+</p>
+{{end}}

@@ -34,9 +34,10 @@ func main() {
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 	port := os.Getenv("PORT")
+	jwtKey := os.Getenv("JWT_SECRET")
 
-	if dbUser == "" || dbPassword == "" || dbName == "" {
-		panic("invalid database parameters")
+	if dbUser == "" || dbPassword == "" || dbName == "" || jwtKey == "" {
+		panic("invalid env parameters")
 	}
 
 	connStr := "user=" + dbUser +
@@ -67,7 +68,7 @@ func main() {
 
 	view := view.NewView(templateSub)
 	model := model.NewModel(db)
-	controller := controller.NewController(model, view, staticSub)
+	controller := controller.NewController(model, view, staticSub, jwtKey)
 
 	mux := controller.Mux()
 

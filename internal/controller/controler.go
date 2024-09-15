@@ -9,19 +9,22 @@ import (
 	"decentrala.org/events/internal/model"
 	"decentrala.org/events/internal/types"
 	"decentrala.org/events/internal/view"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Controller struct {
 	model    model.Model
 	view     view.View
 	staticFS fs.FS
+	key      []byte
 }
 
-func NewController(Model model.Model, View view.View, StaticFS fs.FS) Controller {
+func NewController(Model model.Model, View view.View, StaticFS fs.FS, key string) Controller {
 	return Controller{
 		model:    Model,
 		view:     View,
 		staticFS: StaticFS,
+		key:      []byte(key),
 	}
 }
 
@@ -61,12 +64,14 @@ func (controller *Controller) Mux() http.Handler {
 
 func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var user types.WebsiteUser
+		var err error
 
-		user := types.WebsiteUser{
-			Admin:            false,
-			OrganizationCode: "",
-			Organization:     "",
-			LoggedIn:         false,
+		c, err := r.Cookie("token")
+		if err != nil {
+			user = types.WebsiteUser{}
+		} else {
+			user = controller.verifyToken(c.Value)
 		}
 
 		ctx := context.WithValue(r.Context(), "user", user)
@@ -74,6 +79,34 @@ func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, newReq)
 	})
+}
+
+func (controller *Controller) verifyToken(tokenString string) types.WebsiteUser {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return controller.key, nil
+	})
+
+	invalidUser := types.WebsiteUser{
+		LoggedIn: false,
+		Admin:    false,
+	}
+
+	if err != nil {
+		return invalidUser
+	}
+
+	if !token.Valid {
+		return invalidUser
+	}
+
+	var claims Claims
+
+	return types.WebsiteUser{
+		LoggedIn:         true,
+		Organization:     claims.Organization,
+		OrganizationCode: types.OrganizationCode(claims.OrganizationCode),
+		Admin:            claims.IsAdmin,
+	}
 }
 
 func getUser(r *http.Request) types.WebsiteUser {
