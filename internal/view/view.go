@@ -60,12 +60,19 @@ func (pageExecutor *PageExecutor) executePage(templateName string, pageName stri
 		return fmt.Errorf("template %s not found", templateName)
 	}
 
-	user, ok := pageExecutor.reqCtx.Value("user").(types.WebsiteUser)
-	if !ok {
-		user = types.WebsiteUser{
-			LoggedIn: false,
-			Admin:    false,
-		}
+	wu, ok := pageExecutor.reqCtx.Value("user").(types.WebsiteUser)
+	type userType struct {
+		LoggedIn         bool
+		Admin            bool
+		Organization     string
+		OrganizationCode string
+	}
+
+	user := userType{
+		LoggedIn:         true,
+		Admin:            true,
+		Organization:     wu.Organization(),
+		OrganizationCode: string(wu.OrganizationCode()),
 	}
 
 	if data == nil {

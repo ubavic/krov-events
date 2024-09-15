@@ -17,6 +17,11 @@ func (controller *Controller) getEvents(w http.ResponseWriter, r *http.Request) 
 	from := parseDate(fromParam)
 	to := parseDate(toParam)
 
+	if from == nil {
+		now := time.Now().Add(-10 * time.Hour)
+		from = &now
+	}
+
 	events, err := controller.model.GetEvents(cityParam, "", from, to)
 	if err != nil {
 		controller.serverError(http.StatusInternalServerError, err)(w, r)
@@ -61,7 +66,7 @@ func (controller *Controller) getEvent(w http.ResponseWriter, r *http.Request) {
 
 func (controller *Controller) postEvent(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.LoggedIn {
+	if !user.LoggedIn() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -87,7 +92,7 @@ func (controller *Controller) postEvent(w http.ResponseWriter, r *http.Request) 
 
 func (controller *Controller) deleteEvent(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.LoggedIn {
+	if !user.LoggedIn() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -105,8 +110,8 @@ func (controller *Controller) deleteEvent(w http.ResponseWriter, r *http.Request
 
 func (controller *Controller) newEvent(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.LoggedIn {
-		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
+	if !user.LoggedIn() {
+		controller.serverError(http.StatusMethodNotAllowed, fmt.Errorf("Not logged"))(w, r)
 		return
 	}
 
@@ -129,7 +134,7 @@ func (controller *Controller) editEvent(w http.ResponseWriter, r *http.Request) 
 	}
 
 	user := getUser(r)
-	if !user.LoggedIn {
+	if !user.LoggedIn() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -150,7 +155,7 @@ func (controller *Controller) editEvent(w http.ResponseWriter, r *http.Request) 
 
 func (controller *Controller) editEventPost(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.LoggedIn {
+	if !user.LoggedIn() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -228,7 +233,7 @@ func parseEventFromForm(r *http.Request) (types.Event, []string) {
 	user := getUser(r)
 
 	event := types.Event{
-		OrganizationCode: user.OrganizationCode,
+		OrganizationCode: user.OrganizationCode(),
 		Name:             nameValue,
 		Description:      descriptionValue,
 		EventType:        types.EventType(eventType),

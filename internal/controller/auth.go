@@ -36,11 +36,11 @@ func (controller *Controller) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(20 * time.Minute)
+	expirationTime := time.Now().Add(50 * time.Minute)
 	claims := &Claims{
 		Organization:     organization.Name,
 		OrganizationCode: string(organization.Code),
-		IsAdmin:          organization.IsAdmin(),
+		IsAdmin:          true,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},

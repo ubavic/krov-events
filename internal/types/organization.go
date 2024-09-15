@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -67,4 +68,13 @@ func (org *Organization) IsAdmin() bool {
 	}
 
 	return false
+}
+
+func (org *Organization) GetLoginLink(webUser WebsiteUser) string {
+	if webUser.Admin() && org.token != nil {
+		token := *org.token
+		return fmt.Sprintf("?org=%s&token=%s", string(org.Code), token)
+	}
+
+	return ""
 }

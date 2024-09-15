@@ -54,7 +54,7 @@ func (controller *Controller) getOrganization(w http.ResponseWriter, r *http.Req
 
 func (controller *Controller) newOrganization(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.Admin {
+	if !user.Admin() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -69,7 +69,7 @@ func (controller *Controller) newOrganization(w http.ResponseWriter, r *http.Req
 
 func (controller *Controller) postOrganization(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.Admin {
+	if !user.Admin() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -95,7 +95,7 @@ func (controller *Controller) postOrganization(w http.ResponseWriter, r *http.Re
 
 func (controller *Controller) editOrganization(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.Admin {
+	if !user.Admin() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
@@ -122,13 +122,13 @@ func (controller *Controller) editOrganization(w http.ResponseWriter, r *http.Re
 
 func (controller *Controller) editOrganizationPost(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	if !user.Admin {
+	if !user.Admin() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}
 
 	organization, validationErrors := parseOrganizationFromForm(r)
-	if (user.OrganizationCode != organization.Code) && !user.Admin {
+	if (user.OrganizationCode() != organization.Code) && !user.Admin() {
 		controller.serverError(http.StatusMethodNotAllowed, nil)(w, r)
 		return
 	}

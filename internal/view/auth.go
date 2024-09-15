@@ -4,7 +4,7 @@ func (pe *PageExecutor) LoginPage(successful bool) error {
 	data := make(map[string]any)
 	data["successful"] = successful
 
-	return pe.executePage("login.html", "Login", nil)
+	return pe.executePage("login.html", "Login", data)
 }
 
 func (pe *PageExecutor) LogoutPage() error {

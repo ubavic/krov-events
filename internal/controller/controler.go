@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 
@@ -69,7 +70,7 @@ func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 
 		c, err := r.Cookie("token")
 		if err != nil {
-			user = types.WebsiteUser{}
+			user = types.NewWebsiteUser(false, "", "")
 		} else {
 			user = controller.verifyToken(c.Value)
 		}
@@ -86,37 +87,32 @@ func (controller *Controller) verifyToken(tokenString string) types.WebsiteUser 
 		return controller.key, nil
 	})
 
-	invalidUser := types.WebsiteUser{
-		LoggedIn: false,
-		Admin:    false,
-	}
+	invalidUser := types.WebsiteUser{}
 
 	if err != nil {
+		fmt.Println(err)
 		return invalidUser
 	}
 
 	if !token.Valid {
+		fmt.Println("invalid")
 		return invalidUser
 	}
 
 	var claims Claims
 
-	return types.WebsiteUser{
-		LoggedIn:         true,
-		Organization:     claims.Organization,
-		OrganizationCode: types.OrganizationCode(claims.OrganizationCode),
-		Admin:            claims.IsAdmin,
-	}
+	return types.NewWebsiteUser(
+		true,
+		types.OrganizationCode(claims.OrganizationCode),
+		claims.Organization,
+	)
 }
 
 func getUser(r *http.Request) types.WebsiteUser {
 	user, ok := r.Context().Value("user").(types.WebsiteUser)
 	if !ok {
-		return types.WebsiteUser{
-			LoggedIn: false,
-			Admin:    false,
-		}
+		return types.WebsiteUser{}
 	}
 
-	return user
+	return types.NewWebsiteUser(true, user.OrganizationCode(), user.Organization())
 }

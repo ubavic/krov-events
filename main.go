@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"embed"
+	"encoding/csv"
 	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -15,6 +17,7 @@ import (
 	"decentrala.org/events/internal/controller"
 	"decentrala.org/events/internal/migration"
 	"decentrala.org/events/internal/model"
+	"decentrala.org/events/internal/types"
 	"decentrala.org/events/internal/view"
 )
 
@@ -34,6 +37,7 @@ func main() {
 	}
 
 	test := os.Getenv("TEST_INSTANCE")
+	dbConn := os.Getenv("DB_CONN")
 	dbAddress := os.Getenv("DB_ADDRESS")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -42,20 +46,29 @@ func main() {
 	port := os.Getenv("PORT")
 	jwtKey := os.Getenv("JWT_SECRET")
 
-	if dbUser == "" || dbPassword == "" || dbName == "" || jwtKey == "" {
-		log.Fatalf("invalid env parameters")
+	if jwtKey == "" {
+		log.Fatalf("invalid jwt secret parameters")
 	}
 
 	connStr := ""
-	connStr += " user=" + dbUser
-	connStr += " dbname=" + dbName
-	connStr += " password=" + dbPassword
 
-	if test == "1" {
-		connStr += " sslmode=disable"
+	if dbConn == "" {
+		if dbUser == "" || dbPassword == "" || dbName == "" {
+			log.Fatalf("invalid env parameters")
+		}
+
+		connStr += " user=" + dbUser
+		connStr += " dbname=" + dbName
+		connStr += " password=" + dbPassword
+
+		if test == "1" {
+			connStr += " sslmode=disable"
+		} else {
+			connStr += " host=" + dbAddress + ":" + dbPort
+			connStr += " sslmode=require"
+		}
 	} else {
-		connStr += " host=" + dbAddress + ":" + dbPort
-		connStr += " sslmode=require"
+		connStr = dbConn
 	}
 
 	db, err := sql.Open("postgres", connStr)
@@ -107,4 +120,53 @@ func main() {
 	fmt.Println("http://localhost" + server.Addr + "/")
 
 	server.ListenAndServe()
+}
+
+func ProcessCSV(db *sql.DB) {
+	c, _ := os.Open("dogadjaji.csv")
+
+	model := model.NewModel(db)
+
+	s := csv.NewReader(c)
+
+	ss, _ := s.ReadAll()
+
+	db.Exec(`TRUNCATE TABLE event`)
+
+	for _, row := range ss {
+
+		var ty types.EventType
+
+		if row[4] == " workshop" {
+			ty = types.EventTypeWorkshop
+		} else if row[4] == " movie" {
+			ty = types.EventTypeMovie
+		} else if row[4] == " hack" {
+			ty = types.EvenTypeHackathon
+		} else if row[4] == " lecture" {
+			ty = types.EventTypeLecture
+		} else {
+			ty = types.EvenTypeOther
+		}
+
+		time, e := time.Parse("02-01-2006 15:04", row[0]+row[1])
+		if e != nil {
+			fmt.Println(e)
+			continue
+		}
+
+		event := types.Event{
+			StartsAt:         time,
+			Name:             row[3],
+			OrganizationCode: "dmz",
+			EventType:        ty,
+		}
+
+		_, e = model.CreateEvent(event)
+		if e != nil {
+			fmt.Println(e)
+		} else {
+			fmt.Println("ok", event.Name)
+		}
+	}
 }
