@@ -84,6 +84,7 @@ func (model *Model) GetEvents(city types.CityCode, organization types.Organizati
 
 		event.CityName = types.GetCityName(event.CityCode)
 		event.EventTypeName = types.GetEventTypeName(event.EventType)
+		event.FormatDates()
 
 		events = append(events, event)
 	}
@@ -151,6 +152,7 @@ func (model *Model) GetEvent(id types.EventId) (types.Event, error) {
 
 	event.CityName = types.GetCityName(event.CityCode)
 	event.EventTypeName = types.GetEventTypeName(event.EventType)
+	event.FormatDates()
 
 	return event, nil
 }
