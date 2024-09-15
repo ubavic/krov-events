@@ -13,6 +13,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"decentrala.org/events/internal/controller"
+	"decentrala.org/events/internal/migration"
 	"decentrala.org/events/internal/model"
 	"decentrala.org/events/internal/view"
 )
@@ -23,6 +24,9 @@ var staticFS embed.FS
 //go:embed template/*
 var templateFS embed.FS
 
+//go:embed migrations/*
+var migrationsFS embed.FS
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -30,6 +34,8 @@ func main() {
 	}
 
 	test := os.Getenv("TEST_INSTANCE")
+	dbAddress := os.Getenv("DB_ADDRESS")
+	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
@@ -37,23 +43,40 @@ func main() {
 	jwtKey := os.Getenv("JWT_SECRET")
 
 	if dbUser == "" || dbPassword == "" || dbName == "" || jwtKey == "" {
-		panic("invalid env parameters")
+		log.Fatalf("invalid env parameters")
 	}
 
-	connStr := "user=" + dbUser +
-		" dbname=" + dbName +
-		" password=" + dbPassword +
-		" sslmode=disable"
+	connStr := ""
+	connStr += " user=" + dbUser
+	connStr += " dbname=" + dbName
+	connStr += " password=" + dbPassword
+
+	if test == "1" {
+		connStr += " sslmode=disable"
+	} else {
+		connStr += " host=" + dbAddress + ":" + dbPort
+		connStr += " sslmode=require"
+	}
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer db.Close()
 
+	migrator, err := migration.NewMigrator(db, &migrationsFS)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = migrator.RunMigrations()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	templateSub, err := fs.Sub(templateFS, "template")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	var staticSub fs.FS
@@ -62,7 +85,7 @@ func main() {
 	} else {
 		staticSub, err = fs.Sub(staticFS, "static")
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 

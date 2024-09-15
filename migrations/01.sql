@@ -44,10 +44,12 @@ CREATE INDEX idx_event_start ON event (starts_at);
 CREATE INDEX idx_event_org ON event (organization, starts_at);
 
 CREATE TABLE migration (
-    id uuid PRIMARY KEY,
-    migration_file varchar(10),
+    id serial PRIMARY KEY,
+    migration_file int NOT NULL,
     migration_start timestamptz NOT NULL,
     migration_end timestamptz NOT NULL,
     success boolean NOT NULL,
     error text NOT NULL DEFAULT ''
 );
+
+CREATE INDEX idx_migration_file ON migration (migration_file);
