@@ -1,6 +1,12 @@
 {{template "main" .}}
 {{define "content"}}
-    <h1>Novi događaj - {{.user.Organization}}</h1>
+    <h1>
+        {{if .edit}}
+            Izmeni događaj
+        {{else}}
+            Novi događaj - {{.user.Organization}}
+        {{end}}
+    </h1>
     {{if .validationErrors}}
         <ul class="validationErrors">
             {{range .validationErrors}}
@@ -17,8 +23,10 @@
         </div>
         <div class="formRow">
             <label for="description">Opis:</label>
-            <div class="skewer darkBox">
-                <input type="text" id="description" name="description" min="3" maxlength="100" value="{{.event.Description}}">
+            <div class="darkBox">
+                <textarea id="description" name="description" maxlength="2000">
+                    {{- .event.Description -}}
+                </textarea>
             </div>
         </div>
         <div class="formRow">
@@ -34,13 +42,8 @@
         <div class="formRow">
             <label for="from">Početak:</label>
             <div class="skewer darkBox">
-                <input name="from" type="datetime-local" />
-            </div>
-        </div>
-        <div class="formRow">
-            <label for="to">Kraj:</label>
-            <div class="skewer darkBox">
-                <input name="to" type="datetime-local" />
+                <input type="date" name="fromDate" value="{{.event.StartAtIso}}" required />
+                <input type="time" name="fromTime"  required />
             </div>
         </div>
         <div class="formRow">
@@ -63,12 +66,6 @@
             <label for="entry">Ulaz:</label>
             <div class="skewer darkBox">
                 <input type="number" id="entry" name="entry" step="1" min="0" value="{{.event.EntryPrice}}">
-            </div>
-        </div>
-        <div class="formRow">
-            <label for="language">Jezik:</label>
-            <div class="skewer darkBox">
-                <input type="number" id="language" name="language" step="1" min="0">
             </div>
         </div>
         <div class="rightAligned">

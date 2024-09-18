@@ -10,7 +10,6 @@ import (
 	"decentrala.org/events/internal/model"
 	"decentrala.org/events/internal/types"
 	"decentrala.org/events/internal/view"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type Controller struct {
@@ -70,9 +69,11 @@ func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 
 		c, err := r.Cookie("token")
 		if err != nil {
-			user = types.NewWebsiteUser(false, "", "")
+			user = types.NewRegularVisitor()
+			fmt.Println(err)
 		} else {
 			user = controller.verifyToken(c.Value)
+			user.Hi()
 		}
 
 		ctx := context.WithValue(r.Context(), "user", user)
@@ -82,37 +83,13 @@ func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (controller *Controller) verifyToken(tokenString string) types.WebsiteUser {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return controller.key, nil
-	})
-
-	invalidUser := types.WebsiteUser{}
-
-	if err != nil {
-		fmt.Println(err)
-		return invalidUser
-	}
-
-	if !token.Valid {
-		fmt.Println("invalid")
-		return invalidUser
-	}
-
-	var claims Claims
-
-	return types.NewWebsiteUser(
-		true,
-		types.OrganizationCode(claims.OrganizationCode),
-		claims.Organization,
-	)
-}
-
 func getUser(r *http.Request) types.WebsiteUser {
 	user, ok := r.Context().Value("user").(types.WebsiteUser)
 	if !ok {
 		return types.WebsiteUser{}
 	}
 
-	return types.NewWebsiteUser(true, user.OrganizationCode(), user.Organization())
+	fmt.Println(user.OrganizationCode())
+
+	return types.NewWebsiteUser(true, "dmz", user.Organization())
 }

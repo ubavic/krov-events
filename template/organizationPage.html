@@ -21,13 +21,6 @@
     {{if .organization.Website}}
         <p>Web: <a href="{{.organization.Website}}">{{.organization.Website}}</a></p>
     {{end}}
-    {{if .events}}
-        <h2>Predstojeći događaji</h2>
-        {{range .events}}
-            {{template "eventEntry" .}}
-        {{end}}
-        <p style="text-align: right;"><a href="/events/">Svi događaji</a></p>
-    {{end}}
     {{if .user.Admin}}
         <div class="rightAligned">
             <a href="/organizations/{{.organization.Code}}/edit" class="button skewer">
@@ -36,5 +29,12 @@
                 </div> 
             </a>
         </div>
+    {{end}}
+    {{if .events}}
+        <h2>Predstojeći događaji</h2>
+        {{range .events}}
+            {{template "eventEntry" .}}
+        {{end}}
+        <p style="text-align: right;"><a href="/events/">Svi događaji</a></p>
     {{end}}
 {{end}}

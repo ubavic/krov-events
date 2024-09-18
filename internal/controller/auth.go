@@ -36,7 +36,7 @@ func (controller *Controller) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(50 * time.Minute)
+	expirationTime := time.Now().Add(300 * time.Minute)
 	claims := &Claims{
 		Organization:     organization.Name,
 		OrganizationCode: string(organization.Code),
@@ -54,9 +54,14 @@ func (controller *Controller) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expirationTime,
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		MaxAge:   3600,
 	})
 
 	pe.LoginPage(true)
@@ -70,4 +75,28 @@ func (controller *Controller) logout(w http.ResponseWriter, r *http.Request) {
 
 	pe := controller.view.NewExecutor(w, r.Context())
 	pe.LogoutPage()
+}
+
+func (controller *Controller) verifyToken(tokenString string) types.WebsiteUser {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return controller.key, nil
+	})
+
+	invalidUser := types.WebsiteUser{}
+
+	if err != nil {
+		return invalidUser
+	}
+
+	if !token.Valid {
+		return invalidUser
+	}
+
+	var claims Claims
+
+	return types.NewWebsiteUser(
+		true,
+		"dmz",
+		claims.Organization,
+	)
 }

@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 
 :root {
-    --color-bg: #5c604d;
-    --color-light-bg: #6a6f58;
+    --color-bg: #202027;
+    --color-light-bg: #333345;
     --color-dark: #000000;
+    --color-orange: #e7c885;
     --border-radius: 4px;
 }
 
 body {
     background-color: var(--color-bg);
-    background-image: url("/static/bg.png");
     color: white;
     font-family: "Space Grotesk", sans-serif;
     font-size: 150%;
@@ -41,7 +41,7 @@ nav {
         border-top-width: 0;
 
         &:hover {
-            color: #b4b8a5;
+            color: var(--color-orange);
         }
 
         &>span{
@@ -183,6 +183,7 @@ button, .button {
 
 .button:hover {
     text-decoration: none;
+    background-color: var(--color-orange);
 }
 
 .rightAligner {
@@ -202,7 +203,7 @@ button, .button {
 .darkBox {
     border-radius: var(--border-radius);
     background: var(--color-bg);
-    border: 2px solid black;
+    border: 2px solid #999;
     transition: background-color 0.1s ease-in-out;
 }
 
@@ -212,18 +213,18 @@ button, .button {
 }
 
 .entry {
-    background-color: #7a2323;
-    box-shadow: 2px 2px 0 var(--color-dark);
+    background-color: var(--color-light-bg);
     margin: 1rem 0;
     display: block;
-    border: 1px solid #FFF3;
+    border: 2px solid #999;
     border-radius: var(--border-radius);
     padding: 0.5rem 1rem;
     text-decoration: none;
 
     &:hover {
-        filter: brightness(120%);
+        border-color: var(--color-orange) !important;
         text-decoration: none;
+        color: var(--color-orange);
     }
 
     &>header {
@@ -231,49 +232,18 @@ button, .button {
     }
 }
 
+.dateLocation {
+    opacity: 0.9;
+    text-shadow: none !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .entry strong {
     font-size: larger;
 }
 
-.entryType1 {
-    background-color: hsl(10, 55%, 31%);
-}
-
-.entryType2 {
-    background-color: hsl(20, 55%, 31%);
-}
-
-.entryType3 {
-    background-color: hsl(30, 55%, 31%);
-}
-
-.entryType4 {
-    background-color: hsl(40, 55%, 31%);
-}
-
-.entryType5 {
-    background-color: hsl(350, 55%, 31%);
-}
-
-.entryType6 {
-    background-color: hsl(340, 55%, 31%);
-}
-
-.entryType7 {
-    background-color: hsl(330, 55%, 31%);
-}
-
-.entryType8 {
-    background-color: hsl(320, 55%, 31%);
-}
-
-.entryType9 {
-    background-color: hsl(310, 55%, 31%);
-}
-
-.entryType10 {
-    background-color: hsl(300, 55%, 31%);
-}
 
 .noResult {
     text-align: center;
@@ -286,6 +256,7 @@ button, .button {
 .validationErrors {
     color:#de9b9b
 }
+
 
 @media screen and (max-width: 850px) {
     main {
@@ -327,7 +298,7 @@ button, .button {
 
     .entry.skewer {
         transform: none;
-        &>div {
+        &>article {
             transform: none;
         }
     }

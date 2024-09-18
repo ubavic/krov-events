@@ -9,4 +9,13 @@
         <br>
         <p>{{.event.Description}}</p>
     {{end}}
+    {{if .user.Admin}}
+        <div class="rightAligned">
+            <a href="./edit" class="button skewer">
+                <div>
+                    Izmeni događaj
+                </div>
+            </a>
+        </div>
+    {{end}}
 {{end}}

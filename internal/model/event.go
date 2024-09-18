@@ -237,11 +237,12 @@ func (model *Model) GetOrganizationNext10Events(organization types.OrganizationC
 		LEFT JOIN organization ON event.organization = organization.org_code
 		WHERE
 			deleted_at IS NULL
-			AND event.organization=$1
+			AND event.organization = $1
+			AND starts_at >= $2
 		ORDER BY starts_at
 		LIMIT 10`
 
-	rows, err := model.db.Query(query, organization)
+	rows, err := model.db.Query(query, organization, time.Now().Add(-2*time.Hour))
 	if err != nil {
 		return nil, err
 	}
@@ -267,6 +268,7 @@ func (model *Model) GetOrganizationNext10Events(organization types.OrganizationC
 
 		event.CityName = types.GetCityName(event.CityCode)
 		event.EventTypeName = types.GetEventTypeName(event.EventType)
+		event.FormatDates()
 
 		events = append(events, event)
 	}

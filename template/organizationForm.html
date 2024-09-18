@@ -30,7 +30,9 @@
         <div class="formRow">
             <label for="description">Opis:</label>
             <div class="darkBox">
-                <textarea id="description" name="description">{{.organization.Description}}</textarea>
+                <textarea id="description" name="description" maxlength="2000">
+                    {{- .organization.Description -}}
+                </textarea>
             </div>
         </div>
         <div class="formRow">

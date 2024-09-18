@@ -61,18 +61,21 @@ func (pageExecutor *PageExecutor) executePage(templateName string, pageName stri
 	}
 
 	wu, ok := pageExecutor.reqCtx.Value("user").(types.WebsiteUser)
+
 	type userType struct {
 		LoggedIn         bool
 		Admin            bool
 		Organization     string
 		OrganizationCode string
 	}
-
-	user := userType{
-		LoggedIn:         true,
-		Admin:            true,
-		Organization:     wu.Organization(),
-		OrganizationCode: string(wu.OrganizationCode()),
+	var user userType
+	if ok {
+		user = userType{
+			LoggedIn:         wu.LoggedIn(),
+			Admin:            wu.Admin(),
+			Organization:     wu.Organization(),
+			OrganizationCode: string(wu.OrganizationCode()),
+		}
 	}
 
 	if data == nil {

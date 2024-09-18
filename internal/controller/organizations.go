@@ -37,7 +37,7 @@ func (controller *Controller) getOrganization(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	events, err := controller.model.GetEvents("", organization.Code, nil, nil)
+	events, err := controller.model.GetOrganizationNext10Events(organization.Code)
 	if err != nil {
 		controller.serverError(http.StatusInternalServerError, err)(w, r)
 		return
