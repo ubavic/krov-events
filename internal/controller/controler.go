@@ -73,7 +73,6 @@ func (controller *Controller) userMiddleware(next http.Handler) http.Handler {
 			fmt.Println(err)
 		} else {
 			user = controller.verifyToken(c.Value)
-			user.Hi()
 		}
 
 		ctx := context.WithValue(r.Context(), "user", user)
